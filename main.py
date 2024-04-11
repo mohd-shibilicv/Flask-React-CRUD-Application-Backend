@@ -4,6 +4,17 @@ from config import app, db
 from models import Contact
 
 
+@app.errorhandler(404)
+def not_found_error(error):
+    return jsonify({"error": "Not found"}), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return jsonify({"error": "Internal server error"}), 500
+
+
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
@@ -76,4 +87,4 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
 
-    app.run(debug=True)
+    app.run(debug=False)
